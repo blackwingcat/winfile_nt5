@@ -17,7 +17,6 @@
 
 #include <ole2.h>
 #include <shlobj.h>
-#include "resize.h"
 
 #include "dbg.h"
 
@@ -1018,7 +1017,13 @@ InitFileManager(
    GetPrivateProfileString(szSettings, szUILanguage, szNULL, szTemp, COUNTOF(szTemp), szTheINIFile);
    if (szTemp[0])
    {
-       LCID lcidUI = LocaleNameToLCID(szTemp, 0);
+	   HINSTANCE hDll = GetModuleHandleA("kernel32.dll");
+	   LocaleNameToLCID_ lnlc;
+	   LCID lcidUI = LOCALE_USER_DEFAULT; //LocaleNameToLCID_(szTemp, 0);
+	   lnlc=(LocaleNameToLCID_)GetProcAddress(hDll,"LocaleNameToLCID");
+	   if (lnlc != NULL) {
+		   lcidUI = lnlc(szTemp, 0);
+	   }
        if (lcidUI != 0)
        {
            SetThreadUILanguage((LANGID)lcidUI);
@@ -1273,10 +1278,6 @@ JAPANEND
       return FALSE;
    }
 #endif
-
-   if (!ResizeDialogInitialize(hInstance)) {
-      return FALSE;
-   }
 
    if (!LoadString(hInstance, IDS_WINFILE, szTitle, COUNTOF(szTitle))) {
       return FALSE;
