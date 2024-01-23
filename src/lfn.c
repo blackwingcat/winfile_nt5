@@ -36,15 +36,19 @@ WFFindFirst(
    INT    nLen;
    LPTSTR pEnd;
 
+   INSTANCE hDll = GetModuleHandleA("kernel32.dll");
+   Wow64DisableWow64FsRedirection_ wow64dwow64fsredir;
+   wow64dwow64fsredir = (Wow64DisableWow64FsRedirection_)GetProcAddress(hDll, "Wow64DisableWow64FsRedirection");
+   if (wow64dwow64fsredir != NULL) {
+   	PVOID oldValue;
+   	wow64dwow64fsredir(&oldValue);
+   }
+
    //
    // We OR these additional bits because of the way DosFindFirst works
    // in Windows. It returns the files that are specified by the attrfilter
    // and ORDINARY files too.
    //
-
-   PVOID oldValue;
-   Wow64DisableWow64FsRedirection(&oldValue);
-
    if ((dwAttrFilter & ~(ATTR_DIR | ATTR_HS)) == 0)
    {
 	   // directories only (hidden or not)
@@ -68,7 +72,11 @@ WFFindFirst(
 
    lpFind->fd.dwFileAttributes &= ATTR_USED;
 
-   Wow64RevertWow64FsRedirection(oldValue);
+  Wow64RevertWow64FsRedirection_ wow64revertwow64fsredir;
+   wow64revertwow64fsredir = (Wow64RevertWow64FsRedirection_)GetProcAddress(hDll, "Wow64RevertWow64FsRedirection");
+   if (wow64revertwow64fsredir != NULL) {
+   	wow64revertwow64fsredir(&oldValue);
+   }
 
    //
    // Keep track of length
@@ -116,9 +124,18 @@ WFFindFirst(
 BOOL
 WFFindNext(LPLFNDTA lpFind)
 {
-	PVOID oldValue;
-	Wow64DisableWow64FsRedirection(&oldValue);
-	
+   INSTANCE hDll = GetModuleHandleA("kernel32.dll");
+   Wow64DisableWow64FsRedirection_ wow64dwow64fsredir;
+   wow64dwow64fsredir = (Wow64DisableWow64FsRedirection_)GetProcAddress(hDll, "Wow64DisableWow64FsRedirection");
+   if (wow64dwow64fsredir != NULL) {
+   	PVOID oldValue;
+   	wow64dwow64fsredir(&oldValue);
+   }
+
+   // NT5.1 hack: init WoW64 reversion API check
+   WWow64RevertWow64FsRedirection_ wow64revertwow64fsredir;
+   wow64revertwow64fsredir = (Wow64RevertWow64FsRedirection_)GetProcAddress(hDll, "Wow64RevertWow64FsRedirection");
+
    while (FindNextFile(lpFind->hFindFile, &lpFind->fd)) {
 
 	  lpFind->fd.dwFileAttributes &= ATTR_USED;
@@ -154,7 +171,9 @@ WFFindNext(LPLFNDTA lpFind)
           }
       }
 
-	  Wow64RevertWow64FsRedirection(oldValue);
+   	if (wow64revertwow64fsredir != NULL) {
+   		wow64revertwow64fsredir(&oldValue);
+   	}
 
       lpFind->err = 0;
       return TRUE;
@@ -162,7 +181,9 @@ WFFindNext(LPLFNDTA lpFind)
 
    lpFind->err = GetLastError();
 
-   Wow64RevertWow64FsRedirection(oldValue);
+   if (wow64revertwow64fsredir != NULL) {
+   	wow64revertwow64fsredir(&oldValue);
+   }
    return(FALSE);
 }
 
