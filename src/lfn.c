@@ -36,7 +36,7 @@ WFFindFirst(
    INT    nLen;
    LPTSTR pEnd;
 
-   INSTANCE hDll = GetModuleHandleA("kernel32.dll");
+   HINSTANCE hDll = GetModuleHandleA("kernel32.dll");
    Wow64DisableWow64FsRedirection_ wow64dwow64fsredir;
    wow64dwow64fsredir = (Wow64DisableWow64FsRedirection_)GetProcAddress(hDll, "Wow64DisableWow64FsRedirection");
    if (wow64dwow64fsredir != NULL) {
@@ -124,7 +124,7 @@ WFFindFirst(
 BOOL
 WFFindNext(LPLFNDTA lpFind)
 {
-   INSTANCE hDll = GetModuleHandleA("kernel32.dll");
+   HINSTANCE hDll = GetModuleHandleA("kernel32.dll");
    Wow64DisableWow64FsRedirection_ wow64dwow64fsredir;
    wow64dwow64fsredir = (Wow64DisableWow64FsRedirection_)GetProcAddress(hDll, "Wow64DisableWow64FsRedirection");
    if (wow64dwow64fsredir != NULL) {
