@@ -22,6 +22,9 @@
 #ifndef SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE
 #define SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE    0x2
 #endif
+typedef BOOL(__stdcall* Wow64DisableWow64FsRedirection_)(PVOID *OldValue);
+typedef BOOL(__stdcall* Wow64RevertWow64FsRedirection_)(PVOID OldValue);
+
 typedef int(__stdcall* GetLocaleInfoEx_)(LPCWSTR lpLocaleName, LCTYPE LCType, LPWSTR lpLCData, int cchData);
 typedef LCID(__stdcall* LocaleNameToLCID_)(LPCWSTR lpName, DWORD dwFlags);
 
