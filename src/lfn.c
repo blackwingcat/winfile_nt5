@@ -132,8 +132,7 @@ WFFindNext(LPLFNDTA lpFind)
    	wow64dwow64fsredir(&oldValue);
    }
 
-   // NT5.1 hack: init WoW64 reversion API check
-   WWow64RevertWow64FsRedirection_ wow64revertwow64fsredir;
+   Wow64RevertWow64FsRedirection_ wow64revertwow64fsredir;
    wow64revertwow64fsredir = (Wow64RevertWow64FsRedirection_)GetProcAddress(hDll, "Wow64RevertWow64FsRedirection");
 
    while (FindNextFile(lpFind->hFindFile, &lpFind->fd)) {
